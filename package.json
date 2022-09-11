@@ -1,0 +1,15 @@
+{
+  "name": "augure",
+  "version": "0.0.0",
+  "description": "Random generators for RPG",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sylvain «Greewi» Dumazet",
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "@types/node": "^18.7.16"
+  }
+}
