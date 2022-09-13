@@ -1,20 +1,22 @@
 import { Generator } from "../generator";
+import { Dice, GeneratorResult } from "../generatorResult";
 
 /**
  * Generator that roll dices
  */
 export class DiceGenerator extends Generator {
 	/**
-	 * Generate elements
+	 * Generate an element
 	 * @param args the arguments for the generation
-	 * @returns generated elements
+	 * @returns generated element
 	 */
-	generate(args: string[]): string[] {
+	generate(args: string[]): GeneratorResult {
 		if(args.length==0)
 			throw new Error("No formula given");
 		const formula = args.join('');
 		const evaluationNode = DiceParser.parse(formula);
-		return [formula, evaluationNode.toString(), evaluationNode.stringVal()];
+
+		return new GeneratorResult(`${evaluationNode.val()}`, evaluationNode.roll());
 	}
 }
 
@@ -34,18 +36,12 @@ const endFactorPattern = /[)]/i;
 // Evaluation tree
 // ------------------------------------------------------------------------------------
 
-type Dice = {
-	value: number,
-	kept: boolean
-};
-
 /**
  * The evaluation node is used to evaluate the formula.
  */
 interface EvaluationNode {
 	val : () => number;
-	stringVal : () => string;
-	toString : () => string;
+	roll : () => Dice[];
 }
 
 class NumberNode implements EvaluationNode {
@@ -56,9 +52,7 @@ class NumberNode implements EvaluationNode {
 
 	val() { return this.value; }
 
-	stringVal() { return `${this.value}`; }
-
-	toString() { return `${this.value}`; }
+	roll() {return []};
 }
 
 class DiceNode implements EvaluationNode {
@@ -144,6 +138,7 @@ class DiceNode implements EvaluationNode {
 				}
 			}
 			this.dices.push({
+				type : `d${this.diceType}`,
 				value : diceValue,
 				kept : true
 			});
@@ -193,20 +188,7 @@ class DiceNode implements EvaluationNode {
 
 	val() { return this.value; }
 
-	stringVal() {
-		let dicesValues : string[] = [];
-		for(let dice of this.dices) {
-			if(dice.kept)
-				dicesValues.push(`[${dice.value}]`);
-			else
-				dicesValues.push(`{${dice.value}}`);
-		}
-		return `${this.value} (d${this.diceType} ${dicesValues.join(" ")})`;
-	}
-
-	toString() {
-		return `${this.value}`;
-	}
+	roll() { return this.dices; }
 }
 
 class OperatorNode implements EvaluationNode {
@@ -235,9 +217,9 @@ class OperatorNode implements EvaluationNode {
 
 	val() { return this.value; }
 
-	stringVal() { return `(${this.left.stringVal()} ${this.operator} ${this.right.stringVal()})`; }
-
-	toString() { return `${this.value}`; }
+	roll() {
+		return this.left.roll().concat(this.right.roll());
+	}
 }
 
 // ------------------------------------------------------------------------------------

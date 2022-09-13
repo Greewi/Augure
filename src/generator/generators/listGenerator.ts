@@ -1,17 +1,14 @@
 import { FileLoader } from '../../utils/fileLoader';
 import { Generator } from '../generator';
 import { GeneratorConfiguration } from '../../config/generatorConfiguration';
+import { GeneratorResult } from '../generatorResult';
 
 export class ListGenerator extends Generator {
 
 	private _items : string[];
 
 	/**
-	 * @param {object} config the generator configuration
-	 * @param {string} config.id the generator id
-	 * @param {string} config.type the generator type
-	 * @param {string} config.name the generator name
-	 * @param {string} config.source the generator source
+	 * @param config the generator configuration
 	 */
 	constructor(config : GeneratorConfiguration) {
 		super(config);
@@ -19,27 +16,18 @@ export class ListGenerator extends Generator {
 	}
 
 	/**
-	 * @returns {string} return a random item for the list
+	 * Generate an element
+	 * @param args the arguments for the generation
+	 * @returns generated element
 	 */
-	getRandomItem(): string|null {
-		if(!this._items || this._items.length==0)
-			return null;
-		return this._items[Math.floor(this._items.length*Math.random())];
-	}
+	generate(args: string[]): GeneratorResult {
+		let roll = Math.floor(this._items.length*Math.random());
+		let text = this._items[roll];
 
-	/**
-	 * Generate elements
-	 * @param {string[]} args the arguments forthe generation
-	 * @returns {string[]} generated elements
-	 */
-	generate(args: string[]): string[] {
-		let generated : string[] = [];
-		let count = (args.length>0) ? parseInt(args[0]) : 1;
-		for(let i=0; i<count; i++) {
-			let item = this.getRandomItem();
-			if(item)
-				generated.push(item);
-		}
-		return generated;
+		return new GeneratorResult(text, [{
+			type : `d${this._items.length}`,
+			value : roll+1,
+			kept : true
+		}]);
 	}
 }

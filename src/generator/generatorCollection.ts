@@ -10,8 +10,8 @@ export class GeneratorCollection {
 	/**
 	 * @param {string} source the configuration json file for the generator collection
 	 */
-	constructor(source: string) {
-		this._config = FileLoader.loadGeneratorJson(source);
+	constructor(config: GeneratorCollectionConfiguration) {
+		this._config = config;
 		this._generators = new Map();
 		for(const generatorConfig of this._config.generators) {
 			const generatorConstructor = GeneratorRegister.getGenerator(generatorConfig.type);

@@ -1,4 +1,5 @@
 import { GeneratorConfiguration } from "../config/generatorConfiguration";
+import { GeneratorResult } from "./generatorResult";
 
 export class Generator {
 	private _id : string;
@@ -45,11 +46,11 @@ export class Generator {
 	}
 
 	/**
-	 * Generate elements
+	 * Generate an element
 	 * @param args the arguments for the generation
-	 * @returns generated elements
+	 * @returns generated element
 	 */
-	generate(args: string[]): string[] {
-		return ["Hello world !"];
+	generate(args: string[]): GeneratorResult {
+		return new GeneratorResult("Hello world !", []);
 	}
 }
